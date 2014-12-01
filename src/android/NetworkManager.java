@@ -34,6 +34,9 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+//wifi
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 
 public class NetworkManager extends CordovaPlugin {
 
@@ -80,6 +83,9 @@ public class NetworkManager extends CordovaPlugin {
     ConnectivityManager sockMan;
     BroadcastReceiver receiver;
     private JSONObject lastInfo = null;
+        //wifi
+    private WifiManager wifiManager = null; 
+    private WifiInfo wifiInfo = null;
 
     /**
      * Sets the context of the Command. This can then be used to do things like
@@ -93,6 +99,10 @@ public class NetworkManager extends CordovaPlugin {
         this.sockMan = (ConnectivityManager) cordova.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         this.connectionCallbackContext = null;
 
+       // wifi
+        wifiManager =(WifiManager)cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
+        wifiInfo = wifiManager.getConnectionInfo();
+        
         // We need to listen to connectivity events to update navigator.connection
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -169,6 +179,8 @@ public class NetworkManager extends CordovaPlugin {
             String connectionType = "";
             try {
                 connectionType = thisInfo.get("type").toString();
+                String wfinfo = wifiInfo==null ? "NULL" : wifiInfo.getBSSID();
+                connectionType += wfinfo;
             } catch (JSONException e) { }
 
             sendUpdate(connectionType);
